@@ -1,0 +1,24 @@
+{
+    "prefix": "reproduce",
+    "dataset": "cifar100",
+    "memory_size": 0,
+    "memory_per_class": 0,
+    "fixed_memory": false,
+    "shuffle": true,
+    "init_cls": 10,
+    "increment": 10,
+    "model_name": "moe_adapters",
+    "backbone_type": "clip_vit_b16_moe_adapter",
+    "device": ["0"],
+    "seed": [1993],
+    "batch_size": 128,
+    "num_workers": 8,
+    "clip_model_name": "ViT-B/16",
+    "clip_pretrained": true,
+    "prompt_template": "a photo of a {}.",
+    "adapter_lr": 0.001,
+    "adapter_weight_decay": 0.0,
+    "adapter_label_smoothing": 0.0,
+    "adapter_epochs": 1
+}
+

@@ -21,5 +21,10 @@
 - [ ] Adaptive Compositional Model
 - [ ] ADA
 - [ ] HAM
+- [ ] CN-DPM
+- [ ] CoSCL
+- [ ] SEED
+- [x] MoE-Adapters4CL
+
 ## Others
 - [x] Full Params Fine-tuning

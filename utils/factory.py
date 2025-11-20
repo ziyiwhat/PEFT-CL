@@ -52,6 +52,8 @@ def get_model(model_name, args):
         from models.sdlora import Learner
     elif name == "inflora":
         from models.inflora import Learner
+    elif name == "moe_adapters":
+        from models.moe_adapters import Learner
     else:
         assert 0
     return Learner(args)
