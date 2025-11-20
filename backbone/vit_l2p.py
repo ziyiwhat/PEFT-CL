@@ -26,6 +26,7 @@ Hacked together by / Copyright 2020, Ross Wightman
 """
 import math
 import logging
+import inspect
 from functools import partial
 from collections import OrderedDict
 from typing import Optional
@@ -54,6 +55,12 @@ def _cfg(url='', **kwargs):
         'first_conv': 'patch_embed.proj', 'classifier': 'head',
         **kwargs
     }
+
+
+def _get_pretrained_cfg_value(cfg, key, default=None):
+    if isinstance(cfg, dict):
+        return cfg.get(key, default)
+    return getattr(cfg, key, default)
 
 
 default_cfgs = {
@@ -716,12 +723,33 @@ def _create_vision_transformer(variant, pretrained=False, **kwargs):
         raise RuntimeError('features_only not implemented for Vision Transformer models.')
 
     pretrained_cfg = resolve_pretrained_cfg(variant, pretrained_cfg=kwargs.pop('pretrained_cfg', None))
-    model = build_model_with_cfg(
-        VisionTransformer, variant, pretrained,
+    pretrained_url = _get_pretrained_cfg_value(pretrained_cfg, 'url', '') or ''
+    build_args = dict(
         pretrained_cfg=pretrained_cfg,
         pretrained_filter_fn=checkpoint_filter_fn,
-        pretrained_custom_load='npz' in pretrained_cfg['url'],
-        **kwargs)
+    )
+    builder_params = inspect.signature(build_model_with_cfg).parameters
+    if 'pretrained_custom_load' in builder_params:
+        build_args['pretrained_custom_load'] = 'npz' in pretrained_url
+
+    try:
+        model = build_model_with_cfg(
+            VisionTransformer, variant, pretrained,
+            **build_args,
+            **kwargs)
+    except RuntimeError as err:
+        if pretrained and 'version' in str(err).lower() and 'npz' in pretrained_url:
+            logging.warning(
+                "Pretrained npz load failed for %s (%s); retrying without pretrained weights.",
+                variant,
+                err,
+            )
+            model = build_model_with_cfg(
+                VisionTransformer, variant, False,
+                **build_args,
+                **kwargs)
+        else:
+            raise
     return model
 
 

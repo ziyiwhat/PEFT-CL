@@ -4,6 +4,7 @@
 '''
 import math
 import logging
+import inspect
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -532,11 +533,25 @@ def _create_vision_transformer(variant, pretrained=False, **kwargs):
         raise RuntimeError('features_only not implemented for Vision Transformer models.')
 
     pretrained_cfg = resolve_pretrained_cfg(variant, pretrained_cfg=kwargs.pop('pretrained_cfg', None))
-    model = build_model_with_cfg(
-        VisionTransformer, variant, pretrained,
+    pretrained_url = ""
+    if isinstance(pretrained_cfg, dict):
+        pretrained_url = pretrained_cfg.get('url', '') or ''
+    else:
+        pretrained_url = getattr(pretrained_cfg, 'url', '') or ''
+
+    build_args = dict(
         pretrained_cfg=pretrained_cfg,
         pretrained_filter_fn=checkpoint_filter_fn,
-        pretrained_custom_load='npz' in pretrained_cfg['url'],
+        pretrained_strict=False,
+    )
+
+    builder_params = inspect.signature(build_model_with_cfg).parameters
+    if 'pretrained_custom_load' in builder_params:
+        build_args['pretrained_custom_load'] = 'npz' in pretrained_url
+
+    model = build_model_with_cfg(
+        VisionTransformer, variant, pretrained,
+        **build_args,
         **kwargs)
     return model
 

@@ -50,6 +50,8 @@ def get_model(model_name, args):
         from models.tuna import Learner
     elif name == "sdlora":
         from models.sdlora import Learner
+    elif name == "inflora":
+        from models.inflora import Learner
     else:
         assert 0
     return Learner(args)
