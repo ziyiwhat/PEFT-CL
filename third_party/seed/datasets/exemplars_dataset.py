@@ -1,7 +1,7 @@
 import importlib
 from argparse import ArgumentParser
 
-from datasets.memory_dataset import MemoryDataset
+from third_party.seed.datasets.memory_dataset import MemoryDataset
 
 
 class ExemplarsDataset(MemoryDataset):

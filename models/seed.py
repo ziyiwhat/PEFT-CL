@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import Dataset, DataLoader
 
 from models.base import BaseLearner
 
@@ -13,6 +13,23 @@ if str(SEED_ROOT) not in sys.path:
 from third_party.seed.approach.seed import Appr as SeedApproach
 from third_party.seed.networks.network import ExtractorEnsemble
 from third_party.seed.networks.resnet32_linear_turbo import resnet32
+
+
+class _SeedDatasetWrapper(Dataset):
+    """Wrapper to strip index from DummyDataset's (idx, image, label) return."""
+    def __init__(self, base_dataset):
+        self.base_dataset = base_dataset
+    
+    def __len__(self):
+        return len(self.base_dataset)
+    
+    def __getitem__(self, idx):
+        _, image, label = self.base_dataset[idx]
+        return image, label
+    
+    def __getattr__(self, name):
+        """Forward attribute access to the underlying dataset."""
+        return getattr(self.base_dataset, name)
 
 
 class Learner(BaseLearner):
@@ -65,12 +82,13 @@ class Learner(BaseLearner):
         self._total_classes = self._known_classes + data_manager.get_task_size(self._cur_task)
         self._initialize_seed_components(data_manager)
 
-        train_dataset = data_manager.get_dataset(
+        train_dataset_raw = data_manager.get_dataset(
             list(range(self._known_classes, self._total_classes)),
             source="train",
             mode="train",
         )
-        setattr(train_dataset, "transform", train_dataset.trsf)
+        setattr(train_dataset_raw, "transform", train_dataset_raw.trsf)
+        train_dataset = _SeedDatasetWrapper(train_dataset_raw)
         train_loader = DataLoader(
             train_dataset,
             batch_size=self.batch_size,
@@ -79,12 +97,13 @@ class Learner(BaseLearner):
             pin_memory=True,
         )
 
-        val_dataset = data_manager.get_dataset(
+        val_dataset_raw = data_manager.get_dataset(
             list(range(self._known_classes, self._total_classes)),
             source="train",
             mode="test",
         )
-        setattr(val_dataset, "transform", val_dataset.trsf)
+        setattr(val_dataset_raw, "transform", val_dataset_raw.trsf)
+        val_dataset = _SeedDatasetWrapper(val_dataset_raw)
         val_loader = DataLoader(
             val_dataset,
             batch_size=self.batch_size,
@@ -93,12 +112,13 @@ class Learner(BaseLearner):
             pin_memory=True,
         )
 
-        test_dataset = data_manager.get_dataset(
+        test_dataset_raw = data_manager.get_dataset(
             list(range(0, self._total_classes)),
             source="test",
             mode="test",
         )
-        setattr(test_dataset, "transform", test_dataset.trsf)
+        setattr(test_dataset_raw, "transform", test_dataset_raw.trsf)
+        test_dataset = _SeedDatasetWrapper(test_dataset_raw)
         self.test_loader = DataLoader(
             test_dataset,
             batch_size=self.batch_size,
