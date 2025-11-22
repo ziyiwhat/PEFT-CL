@@ -8,6 +8,11 @@
 - [ ] LFPT5
 - [ ] Episodic Memory Prompts
 - [ ] ProgPrompt
+- [ ] LGCL
+- [ ] OneStagePCL
+- [ ] MoE_PromptCL
+- [ ] C-CLIP
+
 ## LoRA Variations
 - [x] infLoRA
 - [x] SD-LoRA
