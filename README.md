@@ -48,26 +48,10 @@ PEFT-CL is a unified framework for implementing and evaluating various Parameter
 - **Reproducible Results**: Built-in seed management and logging for reproducible experiments
 - **Extensible Design**: Easy to add new PEFT methods following the framework structure
 
-## Installation
-
-### Requirements
-
-- Python >= 3.7
-- PyTorch >= 1.8.0
-- torchvision
-- Other dependencies (see requirements.txt if available)
-
-### Setup
+## Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/PEFT-CL.git
-cd PEFT-CL
-
-# Install dependencies
-pip install -r requirements.txt  # If available
-# Or install manually:
-pip install torch torchvision transformers timm
+git clone https://github.com/yourusername/PEFT-CL.git && cd PEFT-CL && pip install -r requirements.txt
 ```
 
 ## Quick Start
