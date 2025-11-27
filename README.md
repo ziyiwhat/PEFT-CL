@@ -4,6 +4,11 @@
 
 PEFT-CL is a unified framework for implementing and evaluating various Parameter-Efficient Fine-Tuning (PEFT) methods in Continual Learning (CL) scenarios. This framework provides a standardized interface to easily compare and benchmark different PEFT approaches, including Prompt-based, LoRA-based, and Adapter-based methods.
 
+<img src="avg_acc_all.png" alt="Average Accuracy Comparison" style="max-width: 700px; border:1px solid #ddd; margin-bottom:24px">
+
+<!-- **Figure:** *Average accuracy (%) across 10 image classification tasks comparing major PEFT continual learning methods implemented in this repo.* -->
+
+
 ## TODO List
 ### Prompt Series
 - [x] L2P
@@ -166,22 +171,15 @@ Each method may have additional parameters. Refer to the example configuration f
 
 ## Output and Logging
 
-- **Logs**: Training logs are automatically saved to `logs/{model_name}/{dataset}/{init_cls}/{increment}/`
-- **Metrics**: The framework tracks and logs:
-  - Top-1 and Top-5 accuracy per task
-  - Average accuracy across all tasks
-  - Forgetting measure (if enabled)
-  - Parameter counts (total and trainable)
+Training logs are automatically saved to `logs/{model_name}/{dataset}/{init_cls}/{increment}/`
 
-## Adding New Methods
+## Visualization
 
-To add a new PEFT method:
+After completing the experiments, generate comparative accuracy plots using:
 
-1. Create a new model file in `models/` (e.g., `models/new_method.py`)
-2. Implement the `Learner` class following the base interface
-3. Add the method to `utils/factory.py`
-4. Create a configuration file in `exps/`
-5. Add any necessary backbone components in `backbone/` if needed
+```sh
+sh plot.sh
+```
 
 ## Citation
 

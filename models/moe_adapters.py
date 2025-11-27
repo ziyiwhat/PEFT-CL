@@ -82,6 +82,9 @@ class Learner(BaseLearner):
         dataset_name = args.get("dataset", "cifar100")
         self.base_class_names = _load_class_names(dataset_name, self.data_path)
 
+    def after_task(self):
+        self._known_classes = self._total_classes
+
     def incremental_train(self, data_manager):
         if self.class_order is None:
             self.class_order = deepcopy(data_manager._class_order)

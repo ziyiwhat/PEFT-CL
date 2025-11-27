@@ -164,7 +164,12 @@ class Learner(BaseLearner):
 
             self.feature_mat = []
             for idx, feat in enumerate(self.feature_list):
-                uf = torch.Tensor(np.dot(feat, feat.transpose()))
+                if isinstance(feat, torch.Tensor):
+                    feat_np = feat.detach().cpu().numpy()
+                else:
+                    feat_np = np.asarray(feat)
+
+                uf = torch.from_numpy(np.dot(feat_np, feat_np.T)).float()
                 logging.info("Layer {} - Projection Matrix shape: {}".format(idx + 1, uf.shape))
                 self.feature_mat.append(uf)
 

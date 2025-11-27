@@ -479,3 +479,15 @@ Continuing with randomly initialized weights.
 2025-11-27 07:40:34,912 [trainer.py] => Trainable params: 130660
 2025-11-27 07:40:34,912 [cpt.py] => Learning on 0-10
 2025-11-27 07:40:36,067 [cpt.py] => Training first_prompt for task 0
+2025-11-27 07:56:41,719 [cpt.py] => Task 0, Epoch 20/20 => Loss 1.972, Train_accy 29.64, Test_accy 26.70
+2025-11-27 07:56:48,420 [trainer.py] => No NME accuracy.
+2025-11-27 07:56:48,421 [trainer.py] => CNN: {'total': np.float64(26.7), '00-09': np.float64(26.7), 'old': 0, 'new': np.float64(26.7)}
+2025-11-27 07:56:48,421 [trainer.py] => CNN top1 curve: [np.float64(26.7)]
+2025-11-27 07:56:48,422 [trainer.py] => CNN top5 curve: [np.float64(77.0)]
+
+2025-11-27 07:56:48,422 [trainer.py] => Average Accuracy (CNN): 26.7 
+
+2025-11-27 07:56:48,426 [trainer.py] => All params: 171824072
+2025-11-27 07:56:48,427 [trainer.py] => Trainable params: 130660
+2025-11-27 07:56:48,427 [cpt.py] => Learning on 10-20
+2025-11-27 07:56:48,492 [cpt.py] => Training prompt for task 1

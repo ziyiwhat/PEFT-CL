@@ -374,3 +374,69 @@ Continuing with randomly initialized weights.
 2025-11-27 07:44:03,167 [trainer.py] => All params: 173287112
 2025-11-27 07:44:03,168 [trainer.py] => Trainable params: 1612900
 2025-11-27 07:44:03,168 [hideprompt.py] => Learning on 20-30
+2025-11-27 08:39:06,402 [hideprompt.py] => Task 2, Epoch 50/50 => Loss 0.457, Train_accy 87.14, Test_accy 31.43
+2025-11-27 08:39:33,020 [trainer.py] => No NME accuracy.
+2025-11-27 08:39:33,023 [trainer.py] => CNN: {'total': np.float64(31.43), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(94.3), 'old': np.float64(0.0), 'new': np.float64(94.3)}
+2025-11-27 08:39:33,023 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43)]
+2025-11-27 08:39:33,023 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6)]
+
+2025-11-27 08:39:33,024 [trainer.py] => Average Accuracy (CNN): 55.19333333333333 
+
+2025-11-27 08:39:33,027 [trainer.py] => All params: 173287112
+2025-11-27 08:39:33,028 [trainer.py] => Trainable params: 1612900
+2025-11-27 08:39:33,028 [hideprompt.py] => Learning on 30-40
+2025-11-27 09:35:39,561 [hideprompt.py] => Task 3, Epoch 50/50 => Loss 0.581, Train_accy 82.20, Test_accy 22.65
+2025-11-27 09:36:15,067 [trainer.py] => No NME accuracy.
+2025-11-27 09:36:15,067 [trainer.py] => CNN: {'total': np.float64(22.65), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(0.0), '30-39': np.float64(90.6), 'old': np.float64(0.0), 'new': np.float64(90.6)}
+2025-11-27 09:36:15,070 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43), np.float64(22.65)]
+2025-11-27 09:36:15,070 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6), np.float64(32.48)]
+
+2025-11-27 09:36:15,070 [trainer.py] => Average Accuracy (CNN): 47.0575 
+
+2025-11-27 09:36:15,071 [trainer.py] => All params: 173287112
+2025-11-27 09:36:15,072 [trainer.py] => Trainable params: 1612900
+2025-11-27 09:36:15,072 [hideprompt.py] => Learning on 40-50
+2025-11-27 10:34:06,854 [hideprompt.py] => Task 4, Epoch 50/50 => Loss 0.469, Train_accy 86.36, Test_accy 18.88
+2025-11-27 10:34:51,258 [trainer.py] => No NME accuracy.
+2025-11-27 10:34:51,262 [trainer.py] => CNN: {'total': np.float64(18.88), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(0.0), '30-39': np.float64(0.0), '40-49': np.float64(94.4), 'old': np.float64(0.0), 'new': np.float64(94.4)}
+2025-11-27 10:34:51,262 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43), np.float64(22.65), np.float64(18.88)]
+2025-11-27 10:34:51,262 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6), np.float64(32.48), np.float64(28.38)]
+
+2025-11-27 10:34:51,264 [trainer.py] => Average Accuracy (CNN): 41.422 
+
+2025-11-27 10:34:51,265 [trainer.py] => All params: 173287112
+2025-11-27 10:34:51,267 [trainer.py] => Trainable params: 1612900
+2025-11-27 10:34:51,267 [hideprompt.py] => Learning on 50-60
+2025-11-27 11:34:06,180 [hideprompt.py] => Task 5, Epoch 50/50 => Loss 0.595, Train_accy 81.46, Test_accy 14.78
+2025-11-27 11:34:59,146 [trainer.py] => No NME accuracy.
+2025-11-27 11:34:59,149 [trainer.py] => CNN: {'total': np.float64(14.78), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(0.0), '30-39': np.float64(0.0), '40-49': np.float64(0.0), '50-59': np.float64(88.7), 'old': np.float64(0.0), 'new': np.float64(88.7)}
+2025-11-27 11:34:59,149 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43), np.float64(22.65), np.float64(18.88), np.float64(14.78)]
+2025-11-27 11:34:59,149 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6), np.float64(32.48), np.float64(28.38), np.float64(23.18)]
+
+2025-11-27 11:34:59,151 [trainer.py] => Average Accuracy (CNN): 36.98166666666666 
+
+2025-11-27 11:34:59,152 [trainer.py] => All params: 173287112
+2025-11-27 11:34:59,153 [trainer.py] => Trainable params: 1612900
+2025-11-27 11:34:59,153 [hideprompt.py] => Learning on 60-70
+2025-11-27 12:35:43,035 [hideprompt.py] => Task 6, Epoch 50/50 => Loss 0.471, Train_accy 86.18, Test_accy 13.56
+2025-11-27 12:36:44,814 [trainer.py] => No NME accuracy.
+2025-11-27 12:36:44,818 [trainer.py] => CNN: {'total': np.float64(13.56), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(0.0), '30-39': np.float64(0.0), '40-49': np.float64(0.0), '50-59': np.float64(0.0), '60-69': np.float64(94.9), 'old': np.float64(0.0), 'new': np.float64(94.9)}
+2025-11-27 12:36:44,819 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43), np.float64(22.65), np.float64(18.88), np.float64(14.78), np.float64(13.56)]
+2025-11-27 12:36:44,819 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6), np.float64(32.48), np.float64(28.38), np.float64(23.18), np.float64(18.89)]
+
+2025-11-27 12:36:44,822 [trainer.py] => Average Accuracy (CNN): 33.635714285714286 
+
+2025-11-27 12:36:44,824 [trainer.py] => All params: 173287112
+2025-11-27 12:36:44,825 [trainer.py] => Trainable params: 1612900
+2025-11-27 12:36:44,825 [hideprompt.py] => Learning on 70-80
+2025-11-27 13:39:51,174 [hideprompt.py] => Task 7, Epoch 50/50 => Loss 0.565, Train_accy 83.12, Test_accy 11.28
+2025-11-27 13:41:02,669 [trainer.py] => No NME accuracy.
+2025-11-27 13:41:02,669 [trainer.py] => CNN: {'total': np.float64(11.28), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(0.0), '30-39': np.float64(0.0), '40-49': np.float64(0.0), '50-59': np.float64(0.0), '60-69': np.float64(0.0), '70-79': np.float64(90.2), 'old': np.float64(0.0), 'new': np.float64(90.2)}
+2025-11-27 13:41:02,669 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43), np.float64(22.65), np.float64(18.88), np.float64(14.78), np.float64(13.56), np.float64(11.28)]
+2025-11-27 13:41:02,669 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6), np.float64(32.48), np.float64(28.38), np.float64(23.18), np.float64(18.89), np.float64(17.32)]
+
+2025-11-27 13:41:02,669 [trainer.py] => Average Accuracy (CNN): 30.84125 
+
+2025-11-27 13:41:02,671 [trainer.py] => All params: 173287112
+2025-11-27 13:41:02,672 [trainer.py] => Trainable params: 1612900
+2025-11-27 13:41:02,672 [hideprompt.py] => Learning on 80-90

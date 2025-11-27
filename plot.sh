@@ -1,0 +1,1 @@
+python3 scripts/plot_average_accuracy.py --logs-dir logs --output ./avg_acc_all.png
