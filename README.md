@@ -51,7 +51,7 @@ PEFT-CL is a unified framework for implementing and evaluating various Parameter
 ## Setup
 
 ```bash
-git clone https://github.com/yourusername/PEFT-CL.git && cd PEFT-CL && pip install -r requirements.txt
+git clone https://github.com/ziyiwhat/PEFT-CL.git && cd PEFT-CL && pip install -r requirements.txt
 ```
 
 ## Quick Start

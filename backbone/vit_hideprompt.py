@@ -19,10 +19,12 @@ for some einops/einsum fun
 """
 import math
 import logging
+import os
 from copy import deepcopy
 from functools import partial
 from collections import OrderedDict
 from typing import Optional
+from urllib.parse import urlparse
 
 import torch
 import torch.nn as nn
@@ -877,6 +879,37 @@ def _get_pretrained_cfg_value(cfg, key, default=None):
     return getattr(cfg, key, default)
 
 
+def _download_pretrained_npz(pretrained_url: str) -> str:
+    """Download NPZ checkpoints and reuse cached copies."""
+    if not pretrained_url:
+        raise ValueError("Empty url for pretrained checkpoint.")
+
+    download_cached_file = None
+    try:
+        from timm.models._hub import download_cached_file as timm_cached
+        download_cached_file = timm_cached
+    except Exception:
+        try:
+            from timm.models.hub import download_cached_file as timm_cached
+            download_cached_file = timm_cached
+        except Exception:
+            download_cached_file = None
+
+    if download_cached_file is not None:
+        return download_cached_file(pretrained_url)
+
+    cache_dir = os.path.join(torch.hub.get_dir(), 'checkpoints')
+    os.makedirs(cache_dir, exist_ok=True)
+    filename = os.path.basename(urlparse(pretrained_url).path) or 'checkpoint.npz'
+    dest_path = os.path.join(cache_dir, filename)
+    if not os.path.exists(dest_path):
+        _logger.info(f"Downloading pretrained weights from {pretrained_url} to {dest_path}")
+        torch.hub.download_url_to_file(pretrained_url, dest_path, progress=False)
+    else:
+        _logger.info(f"Using cached pretrained weights at {dest_path}")
+    return dest_path
+
+
 def _create_vision_transformer(variant, pretrained=False, **kwargs):
     if kwargs.get('features_only', None):
         raise RuntimeError('features_only not implemented for Vision Transformer models.')
@@ -901,86 +934,91 @@ def _create_vision_transformer(variant, pretrained=False, **kwargs):
     # Load pretrained weights using timm if requested
     if pretrained:
         try:
-            _logger.info(f"Loading pretrained weights for {variant} using timm...")
-            # The variant might be registered in this file, which can cause conflicts
-            # Solution: Directly import timm's native vision_transformer function
-            # to bypass the registry system
-            
-            import warnings
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
+            if pretrained_url.endswith('.npz'):
+                checkpoint_path = _download_pretrained_npz(pretrained_url)
+                model.load_pretrained(checkpoint_path)
+                _logger.info(f"Successfully loaded pretrained NPZ weights for {variant} from {checkpoint_path}")
+            else:
+                _logger.info(f"Loading pretrained weights for {variant} using timm...")
+                # The variant might be registered in this file, which can cause conflicts
+                # Solution: Directly import timm's native vision_transformer function
+                # to bypass the registry system
                 
-                # Import timm's vision_transformer module
-                # This gives us direct access to the native functions, bypassing registry
-                try:
-                    if variant == 'vit_base_patch16_224':
-                        # Directly import the native function from timm
-                        from timm.models.vision_transformer import vit_base_patch16_224 as timm_fn
-                        pretrained_model = timm_fn(pretrained=True, num_classes=0)
-                        _logger.info("Successfully loaded using direct import from timm.models.vision_transformer")
-                    elif variant == 'vit_base_patch16_224_in21k':
-                        from timm.models.vision_transformer import vit_base_patch16_224_in21k as timm_fn
-                        pretrained_model = timm_fn(pretrained=True, num_classes=0)
-                        _logger.info("Successfully loaded using direct import from timm.models.vision_transformer")
-                    else:
-                        raise AttributeError(f"Direct import not implemented for {variant}")
-                except (ImportError, AttributeError) as e1:
-                    # Fallback: try using vision_transformer module
+                import warnings
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    
+                    # Import timm's vision_transformer module
+                    # This gives us direct access to the native functions, bypassing registry
                     try:
-                        from timm.models import vision_transformer as timm_vit
-                        if hasattr(timm_vit, variant):
-                            model_fn = getattr(timm_vit, variant)
-                            pretrained_model = model_fn(pretrained=True, num_classes=0)
+                        if variant == 'vit_base_patch16_224':
+                            # Directly import the native function from timm
+                            from timm.models.vision_transformer import vit_base_patch16_224 as timm_fn
+                            pretrained_model = timm_fn(pretrained=True, num_classes=0)
+                            _logger.info("Successfully loaded using direct import from timm.models.vision_transformer")
+                        elif variant == 'vit_base_patch16_224_in21k':
+                            from timm.models.vision_transformer import vit_base_patch16_224_in21k as timm_fn
+                            pretrained_model = timm_fn(pretrained=True, num_classes=0)
+                            _logger.info("Successfully loaded using direct import from timm.models.vision_transformer")
                         else:
-                            raise AttributeError(f"{variant} not found in vision_transformer")
-                    except Exception as e2:
-                        # Last resort: use create_model with error handling
-                        _logger.warning(f"Direct import failed ({e1}, {e2}), trying create_model...")
+                            raise AttributeError(f"Direct import not implemented for {variant}")
+                    except (ImportError, AttributeError) as e1:
+                        # Fallback: try using vision_transformer module
                         try:
-                            pretrained_model = timm.create_model(
-                                variant,
-                                pretrained=True,
-                                num_classes=0
-                            )
-                        except Exception as e3:
-                            # If all methods fail, log and continue without pretrained weights
-                            _logger.error(f"All loading methods failed: {e3}")
-                            raise e3
-            
-            pretrained_state_dict = pretrained_model.state_dict()
-            del pretrained_model  # Free memory
-            
-            # Filter out keys that don't exist in our custom model
-            model_state_dict = model.state_dict()
-            filtered_state_dict = {}
-            for key, value in pretrained_state_dict.items():
-                # Skip head and classifier weights
-                if 'head' in key or 'classifier' in key:
-                    continue
-                # Only include keys that exist in our model
-                if key in model_state_dict:
-                    # Check if shapes match
-                    if model_state_dict[key].shape == value.shape:
-                        filtered_state_dict[key] = value
-                    else:
-                        _logger.debug(f"Skipping {key} due to shape mismatch: {model_state_dict[key].shape} vs {value.shape}")
-            
-            # Load the filtered state dict
-            missing_keys, unexpected_keys = model.load_state_dict(filtered_state_dict, strict=False)
-            if missing_keys:
-                # Filter out prompt-related keys as they're expected to be missing
-                prompt_missing = [k for k in missing_keys if 'prompt' in k.lower() or 'e_prompt' in k.lower() or 'g_prompt' in k.lower()]
-                other_missing = [k for k in missing_keys if 'prompt' not in k.lower() and 'e_prompt' not in k.lower() and 'g_prompt' not in k.lower()]
-                if other_missing:
-                    _logger.warning(f"Missing keys (non-prompt): {other_missing[:5]}...")  # Show first 5
-                if prompt_missing:
-                    _logger.debug(f"Missing prompt keys (expected): {len(prompt_missing)} keys")
-            if unexpected_keys:
-                _logger.debug(f"Unexpected keys (will be ignored): {len(unexpected_keys)} keys")
-            
-            loaded_count = len(filtered_state_dict)
-            total_count = len([k for k in pretrained_state_dict.keys() if 'head' not in k and 'classifier' not in k])
-            _logger.info(f"Successfully loaded {loaded_count}/{total_count} pretrained weights for {variant}")
+                            from timm.models import vision_transformer as timm_vit
+                            if hasattr(timm_vit, variant):
+                                model_fn = getattr(timm_vit, variant)
+                                pretrained_model = model_fn(pretrained=True, num_classes=0)
+                            else:
+                                raise AttributeError(f"{variant} not found in vision_transformer")
+                        except Exception as e2:
+                            # Last resort: use create_model with error handling
+                            _logger.warning(f"Direct import failed ({e1}, {e2}), trying create_model...")
+                            try:
+                                pretrained_model = timm.create_model(
+                                    variant,
+                                    pretrained=True,
+                                    num_classes=0
+                                )
+                            except Exception as e3:
+                                # If all methods fail, log and continue without pretrained weights
+                                _logger.error(f"All loading methods failed: {e3}")
+                                raise e3
+                
+                pretrained_state_dict = pretrained_model.state_dict()
+                del pretrained_model  # Free memory
+                
+                # Filter out keys that don't exist in our custom model
+                model_state_dict = model.state_dict()
+                filtered_state_dict = {}
+                for key, value in pretrained_state_dict.items():
+                    # Skip head and classifier weights
+                    if 'head' in key or 'classifier' in key:
+                        continue
+                    # Only include keys that exist in our model
+                    if key in model_state_dict:
+                        # Check if shapes match
+                        if model_state_dict[key].shape == value.shape:
+                            filtered_state_dict[key] = value
+                        else:
+                            _logger.debug(f"Skipping {key} due to shape mismatch: {model_state_dict[key].shape} vs {value.shape}")
+                
+                # Load the filtered state dict
+                missing_keys, unexpected_keys = model.load_state_dict(filtered_state_dict, strict=False)
+                if missing_keys:
+                    # Filter out prompt-related keys as they're expected to be missing
+                    prompt_missing = [k for k in missing_keys if 'prompt' in k.lower() or 'e_prompt' in k.lower() or 'g_prompt' in k.lower()]
+                    other_missing = [k for k in missing_keys if 'prompt' not in k.lower() and 'e_prompt' not in k.lower() and 'g_prompt' not in k.lower()]
+                    if other_missing:
+                        _logger.warning(f"Missing keys (non-prompt): {other_missing[:5]}...")  # Show first 5
+                    if prompt_missing:
+                        _logger.debug(f"Missing prompt keys (expected): {len(prompt_missing)} keys")
+                if unexpected_keys:
+                    _logger.debug(f"Unexpected keys (will be ignored): {len(unexpected_keys)} keys")
+                
+                loaded_count = len(filtered_state_dict)
+                total_count = len([k for k in pretrained_state_dict.keys() if 'head' not in k and 'classifier' not in k])
+                _logger.info(f"Successfully loaded {loaded_count}/{total_count} pretrained weights for {variant}")
         except Exception as err:
             import traceback
             _logger.error(
@@ -989,7 +1027,8 @@ def _create_vision_transformer(variant, pretrained=False, **kwargs):
                 f"Continuing with randomly initialized weights."
             )
             # Continue with randomly initialized model
-    
+
+
     return model
 
 
