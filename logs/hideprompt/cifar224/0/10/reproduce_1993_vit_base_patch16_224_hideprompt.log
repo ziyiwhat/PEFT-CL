@@ -440,3 +440,22 @@ Continuing with randomly initialized weights.
 2025-11-27 13:41:02,671 [trainer.py] => All params: 173287112
 2025-11-27 13:41:02,672 [trainer.py] => Trainable params: 1612900
 2025-11-27 13:41:02,672 [hideprompt.py] => Learning on 80-90
+2025-11-27 14:46:33,813 [hideprompt.py] => Task 8, Epoch 50/50 => Loss 0.600, Train_accy 82.10, Test_accy 10.23
+2025-11-27 14:47:53,954 [trainer.py] => No NME accuracy.
+2025-11-27 14:47:53,957 [trainer.py] => CNN: {'total': np.float64(10.23), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(0.0), '30-39': np.float64(0.0), '40-49': np.float64(0.0), '50-59': np.float64(0.0), '60-69': np.float64(0.0), '70-79': np.float64(0.0), '80-89': np.float64(92.1), 'old': np.float64(0.0), 'new': np.float64(92.1)}
+2025-11-27 14:47:53,957 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43), np.float64(22.65), np.float64(18.88), np.float64(14.78), np.float64(13.56), np.float64(11.28), np.float64(10.23)]
+2025-11-27 14:47:53,957 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6), np.float64(32.48), np.float64(28.38), np.float64(23.18), np.float64(18.89), np.float64(17.32), np.float64(16.44)]
+
+2025-11-27 14:47:53,958 [trainer.py] => Average Accuracy (CNN): 28.55111111111111 
+
+2025-11-27 14:47:53,960 [trainer.py] => All params: 173287112
+2025-11-27 14:47:53,960 [trainer.py] => Trainable params: 1612900
+2025-11-27 14:47:53,960 [hideprompt.py] => Learning on 90-100
+2025-11-27 15:55:51,636 [hideprompt.py] => Task 9, Epoch 50/50 => Loss 0.585, Train_accy 82.32, Test_accy 9.08
+2025-11-27 15:57:20,590 [trainer.py] => No NME accuracy.
+2025-11-27 15:57:20,591 [trainer.py] => CNN: {'total': np.float64(9.08), '00-09': np.float64(0.0), '10-19': np.float64(0.0), '20-29': np.float64(0.0), '30-39': np.float64(0.0), '40-49': np.float64(0.0), '50-59': np.float64(0.0), '60-69': np.float64(0.0), '70-79': np.float64(0.0), '80-89': np.float64(0.0), '90-99': np.float64(90.8), 'old': np.float64(0.0), 'new': np.float64(90.8)}
+2025-11-27 15:57:20,591 [trainer.py] => CNN top1 curve: [np.float64(89.6), np.float64(44.55), np.float64(31.43), np.float64(22.65), np.float64(18.88), np.float64(14.78), np.float64(13.56), np.float64(11.28), np.float64(10.23), np.float64(9.08)]
+2025-11-27 15:57:20,591 [trainer.py] => CNN top5 curve: [np.float64(99.1), np.float64(58.65), np.float64(45.6), np.float64(32.48), np.float64(28.38), np.float64(23.18), np.float64(18.89), np.float64(17.32), np.float64(16.44), np.float64(13.45)]
+
+2025-11-27 15:57:20,591 [trainer.py] => Average Accuracy (CNN): 26.603999999999996 
+

@@ -34,11 +34,11 @@ class Learner(BaseLearner):
 
         self.optim = args.get("optim", "adam")
         self.EPSILON = args.get("EPSILON", 1e-8)
-        self.init_epoch = args.get("init_epoch", 20)
+        self.init_epoch = args.get("init_epoch", 10)
         self.init_lr = args.get("init_lr", 5e-4)
         self.init_lr_decay = args.get("init_lr_decay", 0.1)
         self.init_weight_decay = args.get("init_weight_decay", 0.0)
-        self.epochs = args.get("epochs", 20)
+        self.epochs = args.get("epochs", 10)
         self.lrate = args.get("lrate", 5e-4)
         self.lrate_decay = args.get("lrate_decay", 0.1)
         self.batch_size = args.get("batch_size", 128)
@@ -49,13 +49,19 @@ class Learner(BaseLearner):
         self.total_sessions = args.get("total_sessions", args.get("nb_tasks", 1))
         self.dataset = args.get("dataset", "cifar224")
 
-        self.topk = 1
+        self.topk = args.get("topk", 5)
         self.class_num = self._network.class_num
         self.debug = False
 
         self.all_keys = []
         self.feature_list = []
         self.project_type = []
+
+    def _to_numpy(self, array):
+        """Detach torch tensors and ensure numpy arrays for downstream ops."""
+        if isinstance(array, torch.Tensor):
+            return array.detach().cpu().numpy()
+        return np.asarray(array)
 
     def after_task(self):
         self._known_classes = self._total_classes
@@ -164,11 +170,7 @@ class Learner(BaseLearner):
 
             self.feature_mat = []
             for idx, feat in enumerate(self.feature_list):
-                if isinstance(feat, torch.Tensor):
-                    feat_np = feat.detach().cpu().numpy()
-                else:
-                    feat_np = np.asarray(feat)
-
+                feat_np = self._to_numpy(feat)
                 uf = torch.from_numpy(np.dot(feat_np, feat_np.T)).float()
                 logging.info("Layer {} - Projection Matrix shape: {}".format(idx + 1, uf.shape))
                 self.feature_mat.append(uf)
@@ -253,6 +255,8 @@ class Learner(BaseLearner):
     def update_DualGPM(self, mat_list):
         threshold = (self.lame - self.lamb) * self._cur_task / max(self.total_sessions, 1) + self.lamb
         logging.info("Threshold: %s", threshold)
+        mat_list = [self._to_numpy(activation) for activation in mat_list]
+        self.feature_list = [self._to_numpy(feat) for feat in self.feature_list]
         if len(self.feature_list) == 0:
             for activation in mat_list:
                 u, s, _ = np.linalg.svd(activation, full_matrices=False)
@@ -260,7 +264,7 @@ class Learner(BaseLearner):
                 sval_ratio = (s**2) / sval_total if sval_total > 0 else s
                 r = np.sum(np.cumsum(sval_ratio) < threshold)
                 basis = u[:, : max(r, 1)]
-                self.feature_list.append(basis)
+                self.feature_list.append(self._to_numpy(basis))
                 self.project_type.append("remove" if r < (activation.shape[0] / 2) else "retain")
         else:
             for i, activation in enumerate(mat_list):
